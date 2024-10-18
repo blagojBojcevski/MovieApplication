@@ -9,17 +9,26 @@ import java.io.IOException
 
 class MoviesPagingSource(
     private val apiService: MovieApiService,
-    private val apiKey: String
+    private val apiKey: String,
+    private val query: String
 ) : PagingSource<Int, Movie>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Movie> {
-        val page = params.key ?: 1
         return try {
-            val response = apiService.getPopularMovies(apiKey = apiKey)
+            val currentPage = params.key ?: 1
+            val response = if (query.isEmpty()) {
+                apiService.getPopularMovies(apiKey = apiKey)
+            } else {
+                apiService.searchMovieCollection(apiKey = apiKey, query = query)
+            }
+            val totalPages = response.total_pages
+            val prevKey = if (currentPage > 1) currentPage - 1 else null
+            val nextKey = if (currentPage < totalPages) currentPage + 1 else null
+
             LoadResult.Page(
                 data = response.results,
-                prevKey = if (page == 1) null else page - 1,
-                nextKey = if (response.results.isEmpty()) null else page + 1
+                prevKey = prevKey,
+                nextKey = nextKey
             )
         } catch (exception: IOException) {
             LoadResult.Error(exception)

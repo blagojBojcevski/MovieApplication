@@ -15,7 +15,7 @@ class MovieViewModel @Inject constructor(
     private val repository: MovieRepository
 ) : ViewModel() {
 
-    fun getMovies(apiKey: String): Flow<PagingData<Movie>> {
-        return repository.loadMoviesWithPaging(apiKey).cachedIn(viewModelScope)
+    fun getMovies(apiKey: String, query: String): Flow<PagingData<Movie>> {
+        return repository.loadMoviesWithPaging(apiKey, query).cachedIn(viewModelScope)
     }
 }

@@ -12,13 +12,13 @@ import javax.inject.Inject
 class MovieRepository @Inject constructor(
     private val apiService: MovieApiService
 ) {
-    fun loadMoviesWithPaging(apiKey: String): Flow<PagingData<Movie>> {
+    fun loadMoviesWithPaging(apiKey: String, query: String): Flow<PagingData<Movie>> {
         return Pager(
             config = PagingConfig(
                 pageSize = 20,
                 enablePlaceholders = false
             ),
-            pagingSourceFactory = { MoviesPagingSource(apiService, apiKey) }
+            pagingSourceFactory = { MoviesPagingSource(apiService, apiKey, query) }
         ).flow
     }
 
