@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextOverflow
 import coil.compose.rememberImagePainter
 
 @Composable
@@ -41,13 +42,15 @@ fun MovieItem(movie: Movie) {
         Text(
             text = movie.name,
             modifier = Modifier.padding(top = 8.dp),
-            style = MaterialTheme.typography.bodySmall
+            style = MaterialTheme.typography.bodyLarge
         )
 
         Text(
             text = movie.overview,
             modifier = Modifier.padding(top = 4.dp),
-            style = MaterialTheme.typography.bodySmall
+            style = MaterialTheme.typography.bodySmall,
+            maxLines = 5,
+            overflow = TextOverflow.Ellipsis
         )
     }
 }

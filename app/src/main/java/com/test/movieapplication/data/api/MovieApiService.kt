@@ -9,13 +9,15 @@ interface MovieApiService {
     @GET("trending/all/day")
     suspend fun getPopularMovies(
         @Query("language") language: String = "en-US",
-        @Query("api_key") apiKey: String
+        @Query("api_key") apiKey: String,
+        @Query("page") page: Int
     ): MovieResponse
 
     @GET("search/collection")
     suspend fun searchMovieCollection(
         @Query("query") query: String,
         @Query("language") language: String = "en-US",
-        @Query("api_key") apiKey: String
+        @Query("api_key") apiKey: String,
+        @Query("page") page: Int
     ): MovieResponse
 }

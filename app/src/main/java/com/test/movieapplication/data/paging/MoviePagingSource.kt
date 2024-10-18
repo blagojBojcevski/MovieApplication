@@ -17,9 +17,9 @@ class MoviesPagingSource(
         return try {
             val currentPage = params.key ?: 1
             val response = if (query.isEmpty()) {
-                apiService.getPopularMovies(apiKey = apiKey)
+                apiService.getPopularMovies(apiKey = apiKey, page = currentPage)
             } else {
-                apiService.searchMovieCollection(apiKey = apiKey, query = query)
+                apiService.searchMovieCollection(apiKey = apiKey, query = query, page = currentPage)
             }
             val totalPages = response.total_pages
             val prevKey = if (currentPage > 1) currentPage - 1 else null
