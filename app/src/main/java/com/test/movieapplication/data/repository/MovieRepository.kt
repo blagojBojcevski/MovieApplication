@@ -1,26 +1,25 @@
 package com.test.movieapplication.data.repository
 
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
-import androidx.paging.PagingData
+import android.util.Log
 import com.test.movieapplication.data.api.MovieApiService
-import com.test.movieapplication.data.model.Movie
 import com.test.movieapplication.data.model.MovieDetail
-import com.test.movieapplication.data.paging.MoviesPagingSource
-import kotlinx.coroutines.flow.Flow
+import com.test.movieapplication.data.model.MovieResponse
 import javax.inject.Inject
 
 class MovieRepository @Inject constructor(
     private val apiService: MovieApiService
 ) {
-    fun loadMoviesWithPaging(apiKey: String, query: String): Flow<PagingData<Movie>> {
-        return Pager(
-            config = PagingConfig(
-                pageSize = 20,
-                enablePlaceholders = false
-            ),
-            pagingSourceFactory = { MoviesPagingSource(apiService, apiKey, query) }
-        ).flow
+
+    suspend fun getPopularMovies(apiKey: String, page: Int): MovieResponse {
+        val response = apiService.getPopularMovies("en-US",apiKey, page)
+        Log.d("MovieRepository", "Fetched ${response.results.size} popular movies")
+        return response
+    }
+
+    suspend fun searchMovies(apiKey: String, query: String, page: Int): MovieResponse {
+        val response = apiService.searchMovieCollection(query,"en-US",apiKey, page)
+        Log.d("MovieRepository", "Fetched ${response.results.size} movies for query: $query")
+        return response
     }
 
     suspend fun getMovieById(movieId: Int, apiKey: String): MovieDetail {

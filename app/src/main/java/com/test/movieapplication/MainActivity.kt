@@ -35,14 +35,11 @@ fun MovieAppNavigation(viewModel: MovieViewModel) {
         composable("movie_list") {
             MovieListScreen(
                 viewModel = viewModel,
-                apiKey = "34190fac5efa997a8fe0dd8d51356032",
-                onMovieClick = { movieId ->
-                    navController.navigate("movie_details/$movieId")
-                }
+                navController
             )
         }
 
-        composable("movie_details/{movieId}") { backStackEntry ->
+        composable("movieDetail/{movieId}") { backStackEntry ->
             val movieId = backStackEntry.arguments?.getString("movieId")
             if (movieId != null) {
                 MovieDetailScreen(viewModel = viewModel, movieId = movieId.toInt(), navController = navController, apiKey = "34190fac5efa997a8fe0dd8d51356032")
