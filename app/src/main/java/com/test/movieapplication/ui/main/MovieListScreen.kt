@@ -12,22 +12,29 @@ import com.test.movieapplication.data.model.Movie
 import com.test.movieapplication.viewmodel.MovieViewModel
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.paging.LoadState
 
 @Composable
 fun MovieListScreen(
     viewModel: MovieViewModel,
-    apiKey: String) {
+    apiKey: String,
+    onMovieClick: (String) -> Unit) {
 
     var searchQuery by remember { mutableStateOf("") }
 
     val movies: LazyPagingItems<Movie> =
         viewModel.getMovies(apiKey = apiKey, query = searchQuery)
             .collectAsLazyPagingItems()
+
+    val listState = rememberSaveable(saver = LazyListState.Saver) {
+        LazyListState()
+    }
 
     Column(
         modifier = Modifier
@@ -44,11 +51,12 @@ fun MovieListScreen(
             singleLine = true
         )
 
-        LazyColumn {
+        LazyColumn(state = listState) {
             items(count = movies.itemCount) { index ->
                 val item = movies[index]
                 item?.let {
-                    MovieItem(movie = it)
+                    if(item.poster_path != null && item.overview != null)
+                    MovieItem(movie = it,  onMovieClick = onMovieClick)
                 }
             }
 

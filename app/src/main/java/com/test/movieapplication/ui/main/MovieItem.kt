@@ -9,6 +9,7 @@ import com.test.movieapplication.data.model.Movie
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -18,11 +19,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import coil.compose.rememberImagePainter
 
 @Composable
-fun MovieItem(movie: Movie) {
+fun MovieItem(movie: Movie, onMovieClick: (String) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 16.dp)
+            .clickable { onMovieClick(movie.id.toString()) }
     ) {
         Image(
             painter = rememberImagePainter(
@@ -39,18 +41,22 @@ fun MovieItem(movie: Movie) {
                 .clip(RoundedCornerShape(8.dp))
         )
 
-        Text(
-            text = movie.name,
-            modifier = Modifier.padding(top = 8.dp),
-            style = MaterialTheme.typography.bodyLarge
-        )
+        movie.original_title?.let {
+            Text(
+                text = it,
+                modifier = Modifier.padding(top = 8.dp),
+                style = MaterialTheme.typography.bodyLarge
+            )
+        }
 
-        Text(
-            text = movie.overview,
-            modifier = Modifier.padding(top = 4.dp),
-            style = MaterialTheme.typography.bodySmall,
-            maxLines = 5,
-            overflow = TextOverflow.Ellipsis
-        )
+        movie.overview?.let {
+            Text(
+                text = it,
+                modifier = Modifier.padding(top = 4.dp),
+                style = MaterialTheme.typography.bodySmall,
+                maxLines = 5,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
     }
 }

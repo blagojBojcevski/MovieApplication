@@ -5,6 +5,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.test.movieapplication.data.api.MovieApiService
 import com.test.movieapplication.data.model.Movie
+import com.test.movieapplication.data.model.MovieDetail
 import com.test.movieapplication.data.paging.MoviesPagingSource
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -22,4 +23,9 @@ class MovieRepository @Inject constructor(
         ).flow
     }
 
+    suspend fun getMovieById(movieId: Int, apiKey: String): MovieDetail {
+        return apiService.getMovieById(
+            movieId = movieId, apiKey = apiKey
+        )
+    }
 }
