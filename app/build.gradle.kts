@@ -72,6 +72,17 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.lifecycle.viewmodel.compose)
 
+    testImplementation (libs.mockk)
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.mockito.kotlin)
+
+    // Add this if using Mockito with coroutines
+    testImplementation(libs.mockito.inline)
+
+    // Coroutines test library
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.turbine)
+
     // Hilt dependencies
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
