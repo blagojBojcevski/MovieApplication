@@ -1,5 +1,7 @@
 package com.test.movieapplication.data.model
 
+import com.google.gson.annotations.SerializedName
+
 data class MovieDetail(
     val id: Int,
     val original_title: String,
@@ -9,5 +11,6 @@ data class MovieDetail(
     val original_name: String,
     val vote_count: String?,
     val vote_average: Double?,
+    @SerializedName("production_companies")
     val authors: List<ProductionCompany>
 )

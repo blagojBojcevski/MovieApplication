@@ -1,22 +1,20 @@
 package com.test.movieapplication.ui.main
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.Composable
-import com.test.movieapplication.data.model.Movie
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
-import coil.compose.rememberImagePainter
+import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
+import com.test.movieapplication.BuildConfig
+import com.test.movieapplication.data.model.Movie
 
 @Composable
 fun MovieItem(movie: Movie, onMovieClick: (String) -> Unit) {
@@ -26,13 +24,8 @@ fun MovieItem(movie: Movie, onMovieClick: (String) -> Unit) {
             .padding(bottom = 16.dp)
             .clickable { onMovieClick(movie.id.toString()) }
     ) {
-        Image(
-            painter = rememberImagePainter(
-                data = "https://image.tmdb.org/t/p/w500${movie.poster_path}",
-                builder = {
-                    crossfade(true)
-                }
-            ),
+        AsyncImage(
+            model = "${BuildConfig.IMAGE_URL}${movie.poster_path}",
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier
@@ -41,22 +34,18 @@ fun MovieItem(movie: Movie, onMovieClick: (String) -> Unit) {
                 .clip(RoundedCornerShape(8.dp))
         )
 
-        movie.original_title?.let {
-            Text(
-                text = it,
-                modifier = Modifier.padding(top = 8.dp),
-                style = MaterialTheme.typography.bodyLarge
-            )
-        }
+        Text(
+            text = movie.original_title ?: "",
+            modifier = Modifier.padding(top = 8.dp),
+            style = MaterialTheme.typography.bodyLarge
+        )
 
-        movie.overview?.let {
-            Text(
-                text = it,
-                modifier = Modifier.padding(top = 4.dp),
-                style = MaterialTheme.typography.bodySmall,
-                maxLines = 5,
-                overflow = TextOverflow.Ellipsis
-            )
-        }
+        Text(
+            text = movie.overview ?: "",
+            modifier = Modifier.padding(top = 4.dp),
+            style = MaterialTheme.typography.bodySmall,
+            maxLines = 5,
+            overflow = TextOverflow.Ellipsis
+        )
     }
 }

@@ -1,4 +1,4 @@
-package com.test.movieapplication.ui.main
+package com.test.movieapplication.ui.details
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -22,18 +22,21 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
+import com.test.movieapplication.BuildConfig
 import com.test.movieapplication.viewmodel.MovieViewModel
+import androidx.compose.material3.*
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MovieDetailScreen(
     viewModel: MovieViewModel,
     movieId: Int,
-    navController: NavController,
-    apiKey: String
+    navController: NavController
 ) {
     LaunchedEffect(movieId) {
-        viewModel.fetchMovieById(movieId, apiKey)
+        viewModel.fetchMovieById(movieId)
     }
 
     val movieDetail by viewModel.movieDetailStateFlow.collectAsState()
@@ -49,16 +52,18 @@ fun MovieDetailScreen(
                 }
             )
         }
-    ) {paddingValues ->
+    ) { paddingValues ->
         movieDetail?.let { movie ->
             Column(
                 modifier = Modifier
                     .padding(paddingValues)
                     .padding(16.dp)
+                    .fillMaxSize()
             ) {
+                // Movie Poster
                 Image(
                     painter = rememberImagePainter(
-                        data = "https://image.tmdb.org/t/p/w500${movie.poster_path}",
+                        data = "${BuildConfig.IMAGE_URL}${movie.poster_path}",
                         builder = {
                             crossfade(true)
                         }
@@ -73,13 +78,67 @@ fun MovieDetailScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Text(text = movie.original_title, style = MaterialTheme.typography.bodyLarge)
+                // Movie Title
+                Text(
+                    text = movie.original_title,
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 24.sp
+                    )
+                )
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                Text(text = movie.overview, style = MaterialTheme.typography.bodyMedium)
+                // Ratings and Votes
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "Rating: ${String.format("%.1f", movie.vote_average)}/10",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    Text(
+                        text = "Votes: ${movie.vote_count}",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Overview
+                Text(
+                    text = "Overview",
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = movie.overview,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Authors (if any)
+                if (movie.authors.isNotEmpty()) {
+                    Text(
+                        text = "Authors",
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Column {
+                        movie.authors.forEach { author ->
+                            Text(
+                                text = author.name,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                        }
+                    }
+                }
             }
         } ?: run {
+            // Loading State
             Column(
                 modifier = Modifier
                     .fillMaxSize()

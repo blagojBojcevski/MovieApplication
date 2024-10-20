@@ -20,39 +20,48 @@ import androidx.navigation.NavController
 fun MovieListScreen(viewModel: MovieViewModel, navController: NavController) {
     var searchQuery by rememberSaveable { mutableStateOf("") }
 
+    // Update search query in the ViewModel whenever it changes
     LaunchedEffect(searchQuery) {
         viewModel.setQuery(searchQuery)
     }
 
+    // Collect the paginated movie list items
     val movies = viewModel.moviesFlow.collectAsLazyPagingItems()
 
+    // Save the list state to preserve scroll position on recomposition
     val listState = rememberSaveable(saver = LazyListState.Saver) {
         LazyListState()
     }
 
-    Column {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp)
+    ) {
+        // Search TextField for movie queries
         TextField(
             value = searchQuery,
             onValueChange = { newQuery -> searchQuery = newQuery },
             label = { Text("Search Movies") },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(top = 16.dp)
         )
 
         LazyColumn(
             state = listState,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp)
+            modifier = Modifier.fillMaxSize()
         ) {
             items(count = movies.itemCount) { index ->
                 val item = movies[index]
                 item?.let {
                     if (item.poster_path != null && item.overview != null) {
-                        MovieItem(movie = it, onMovieClick = {
-                            navController.navigate("movieDetail/${item.id}")
-                        })
+                        MovieItem(
+                            movie = it,
+                            onMovieClick = {
+                                navController.navigate("movieDetail/${item.id}")
+                            }
+                        )
                     }
                 }
             }

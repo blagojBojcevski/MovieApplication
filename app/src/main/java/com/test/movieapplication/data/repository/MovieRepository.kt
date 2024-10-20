@@ -12,13 +12,11 @@ class MovieRepository @Inject constructor(
 
     suspend fun getPopularMovies(apiKey: String, page: Int): MovieResponse {
         val response = apiService.getPopularMovies("en-US",apiKey, page)
-        Log.d("MovieRepository", "Fetched ${response.results.size} popular movies")
         return response
     }
 
     suspend fun searchMovies(apiKey: String, query: String, page: Int): MovieResponse {
         val response = apiService.searchMovieCollection(query,"en-US",apiKey, page)
-        Log.d("MovieRepository", "Fetched ${response.results.size} movies for query: $query")
         return response
     }
 

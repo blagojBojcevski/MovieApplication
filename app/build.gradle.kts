@@ -20,8 +20,20 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     buildTypes {
+        debug {
+            buildConfigField("String", "API_URL", "\"https://api.themoviedb.org/3/\"")
+            buildConfigField("String", "API_KEY", "\"${properties["apiKey"]}\"")
+            buildConfigField( "String", "IMAGE_URL", "\"https://image.tmdb.org/t/p/w500\"")
+        }
         release {
+            buildConfigField("String", "API_URL", "\"https://api.themoviedb.org/3/\"")
+            buildConfigField("String", "API_KEY", "\"${properties["apiKey"]}\"")
+            buildConfigField( "String", "IMAGE_URL", "\"https://image.tmdb.org/t/p/w500\"")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
