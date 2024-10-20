@@ -4,7 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -19,14 +19,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import coil.compose.rememberImagePainter
 import com.test.movieapplication.BuildConfig
 import com.test.movieapplication.viewmodel.MovieViewModel
-import androidx.compose.material3.*
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,7 +48,7 @@ fun MovieDetailScreen(
                 title = { Text(text = "Movie Details") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
             )
@@ -62,11 +63,11 @@ fun MovieDetailScreen(
             ) {
                 // Movie Poster
                 Image(
-                    painter = rememberImagePainter(
-                        data = "${BuildConfig.IMAGE_URL}${movie.poster_path}",
-                        builder = {
-                            crossfade(true)
-                        }
+                    painter = rememberAsyncImagePainter(
+                        ImageRequest.Builder(LocalContext.current)
+                            .data(data = "${BuildConfig.IMAGE_URL}${movie.poster_path}").apply(block = fun ImageRequest.Builder.() {
+                                crossfade(true)
+                            }).build()
                     ),
                     contentDescription = null,
                     modifier = Modifier
@@ -128,11 +129,35 @@ fun MovieDetailScreen(
                     Spacer(modifier = Modifier.height(8.dp))
                     Column {
                         movie.authors.forEach { author ->
-                            Text(
-                                text = author.name,
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                            Spacer(modifier = Modifier.height(4.dp))
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                // Author Logo
+                                Image(
+                                    painter = rememberAsyncImagePainter(
+                                        ImageRequest.Builder(
+                                            LocalContext.current
+                                        ).data(data = "${BuildConfig.IMAGE_URL}${author.logo_path}")
+                                            .apply(block = fun ImageRequest.Builder.() {
+                                                crossfade(true)
+                                            }).build()
+                                    ),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .size(40.dp)
+                                        .clip(RoundedCornerShape(8.dp)),
+                                    contentScale = ContentScale.Crop
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+
+                                // Author Name
+                                Text(
+                                    text = author.name,
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(8.dp))
                         }
                     }
                 }

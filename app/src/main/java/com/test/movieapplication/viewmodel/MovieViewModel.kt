@@ -8,7 +8,7 @@ import androidx.paging.cachedIn
 import com.test.movieapplication.BuildConfig
 import com.test.movieapplication.data.model.MovieDetail
 import com.test.movieapplication.data.paging.MoviesPagingSource
-import com.test.movieapplication.data.repository.MovieRepository
+import com.test.movieapplication.data.repository.MovieRepositoryInterface
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,7 +18,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MovieViewModel @Inject constructor(
-    private val repository: MovieRepository
+    private val repository: MovieRepositoryInterface
 ) : ViewModel() {
 
     private val apiKey = BuildConfig.API_KEY
