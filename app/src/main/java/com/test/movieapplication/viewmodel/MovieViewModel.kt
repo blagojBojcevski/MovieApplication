@@ -21,60 +21,58 @@ class MovieViewModel @Inject constructor(
     private val repository: MovieRepositoryInterface
 ) : ViewModel() {
 
+    // API key for authentication with the movie API
     private val apiKey = BuildConfig.API_KEY
 
-    // Backing StateFlow for the movie detail, mutable only within the ViewModel
+    // StateFlow that holds the detailed information of a selected movie
     private val _movieDetailStateFlow = MutableStateFlow<MovieDetail?>(null)
 
-    // Exposed immutable StateFlow for observing movie details in the UI
+    // Publicly exposed StateFlow for observing movie detail updates
     val movieDetailStateFlow: StateFlow<MovieDetail?> = _movieDetailStateFlow
 
-    // Holds the current search query for movies
+    // StateFlow that holds the current search query for filtering movies
     private val currentQuery = MutableStateFlow("")
 
     /**
-     * Flow of movies based on the current query. It triggers a new search whenever
-     * the query changes. The data is paginated using Paging 3 library.
-     *
-     * - flatMapLatest: Ensures that only the latest query result is collected.
-     * - Pager: Creates the paginated data source.
-     * - cachedIn: Caches the flow within the viewModelScope to ensure data survives configuration changes.
-     */
+    * Flow of movies based on the current query. It triggers a new search whenever
+    * the query changes.
+    *
+    * - flatMapLatest: Ensures that only the latest query result is collected.
+    * - Pager: Creates the paginated data source.
+    * - cachedIn: Caches the flow within the viewModelScope to ensure data survives configuration changes.
+    */
     val moviesFlow = currentQuery.flatMapLatest { query ->
         Pager(
-            config = PagingConfig(pageSize = 20), // Configures pagination with a page size of 20 items
+            config = PagingConfig(pageSize = 20),
             pagingSourceFactory = {
-                MoviesPagingSource(repository, apiKey = apiKey, query = query) // Fetches data from the PagingSource
+                MoviesPagingSource(repository, apiKey = apiKey, query = query)
             }
-        ).flow.cachedIn(viewModelScope) // Cache the result in the ViewModel's coroutine scope
+        ).flow.cachedIn(viewModelScope)
     }
 
     /**
-     * Sets a new search query for fetching movies. This updates the `currentQuery` which in turn triggers
-     * a new paginated search in `moviesFlow`.
+     * Updates the search query used to fetch movies.
      *
-     * @param query The search query entered by the user.
+     * @param query The new search query string.
      */
     fun setQuery(query: String) {
-        currentQuery.value = query // Updates the query, causing moviesFlow to refresh
+        currentQuery.value = query
     }
 
+
     /**
-     * Fetches detailed information about a specific movie by its ID.
-     * The result is posted to the `_movieDetailStateFlow` which can be observed by the UI.
+     * Fetches the details of a movie by its ID.
+     * The result is posted to the `_movieDetailStateFlow` for UI observation.
      *
      * @param movieId The ID of the movie to fetch details for.
      */
     fun fetchMovieById(movieId: Int) {
         viewModelScope.launch {
             try {
-                // Calls the repository to fetch movie details by ID
                 val movieDetail = repository.getMovieById(movieId, apiKey)
-                // Updates the movie detail state flow with the fetched data
                 _movieDetailStateFlow.value = movieDetail
             } catch (e: Exception) {
-                // Logs the error to the console for debugging purposes
-                e.printStackTrace() // Use a logger in production instead of printStackTrace
+                e.printStackTrace()
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.test.movieapplication
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -15,32 +16,28 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    // ViewModel is scoped to the activity
     private val movieViewModel: MovieViewModel by viewModels()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+        override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // Set the Compose content of the activity
         setContent {
-            MovieAppNavigation(viewModel = movieViewModel)
+            MovieAppNavigation(viewModel = movieViewModel, applicationContext)
         }
     }
 }
 
 @Composable
-fun MovieAppNavigation(viewModel: MovieViewModel) {
-    // Navigation controller to handle screen navigation
+fun MovieAppNavigation(viewModel: MovieViewModel, context: Context) {
     val navController = rememberNavController()
 
-    // NavHost sets up the navigation graph and handles composable destinations
     NavHost(navController = navController, startDestination = Routes.MovieList) {
 
         // Movie list screen route
         composable(Routes.MovieList) {
             MovieListScreen(
                 viewModel = viewModel,
-                navController = navController
+                navController = navController,
+                context = context
             )
         }
 

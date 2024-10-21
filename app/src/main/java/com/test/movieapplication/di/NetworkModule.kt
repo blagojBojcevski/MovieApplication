@@ -1,6 +1,7 @@
-package com.test.movieapplication.data.api
+package com.test.movieapplication.di
 
 import com.test.movieapplication.BuildConfig
+import com.test.movieapplication.data.api.MovieApiService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -11,7 +12,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object AppModule {
+object NetworkModule {
 
     @Provides
     @Singleton
