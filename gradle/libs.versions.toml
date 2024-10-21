@@ -3,16 +3,36 @@ agp = "8.7.1"
 kotlin = "2.0.0"
 coreKtx = "1.13.1"
 junit = "4.13.2"
+mockito_core = "4.3.1"
+mockito_kotlin = "3.2.0"
+mockito_inline = "3.11.2"
+kotlinx_coroutines_test = "1.7.3"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 lifecycleRuntimeKtx = "2.8.6"
 activityCompose = "1.9.3"
 composeBom = "2024.04.01"
+hilt = "2.48"
+hiltCompiler = "2.48"
+retrofit = "2.9.0"
+paging = "3.0.0"
+composePaging = "3.2.0"
+lifecycle-viewmodel-compose = "2.8.5"
+hilt-navigation-compose = "1.2.0"
+coil-compose = "2.0.0"
+mockk  = "1.13.5"
+room = "2.6.1"
+accompanist = "0.24.13-rc"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito_core" }
+mockito-kotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", version.ref = "mockito_kotlin" }
+mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
+mockito-inline = { group = "org.mockito", name = "mockito-inline", version.ref = "mockito_inline" }
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinx_coroutines_test" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
@@ -25,9 +45,27 @@ androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-man
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 
+hilt-android = { module = "com.google.dagger:hilt-android",  version.ref = "hilt" }
+hilt-compiler = { module = "com.google.dagger:hilt-android-compiler",  version.ref = "hiltCompiler" }
+android-retrofit = { module = "com.squareup.retrofit2:retrofit",  version.ref = "retrofit" }
+android-retrofit-converter = { module = "com.squareup.retrofit2:converter-gson",  version.ref = "retrofit" }
+android-paging = { module = "androidx.paging:paging-runtime-ktx",  version.ref = "paging" }
+compose-paging = { module = "androidx.paging:paging-compose",  version.ref = "composePaging" }
+lifecycle-viewmodel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "lifecycle-viewmodel-compose" }
+hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hilt-navigation-compose" }
+coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil-compose" }
+
+room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
+room-testing = { module = "androidx.room:room-testing", version.ref = "room" }
+room-paging = { module = "androidx.room:room-paging", version.ref = "room" }
+
+accompanist-swiperefresh = { module = "com.google.accompanist:accompanist-swiperefresh", version.ref = "accompanist" }
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-kotlin-hilt = { id = "com.google.dagger.hilt.android", version = "2.44" }
+kotlin-hilt = { id = "com.google.dagger.hilt.android", version = "2.48" }
+kotlin-kapt = { id = "org.jetbrains.kotlin.kapt"}
 

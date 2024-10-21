@@ -1,47 +1,65 @@
 package com.test.movieapplication
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+import androidx.activity.viewModels
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.test.movieapplication.ui.theme.MovieApplicationTheme
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.test.movieapplication.ui.details.MovieDetailScreen
+import com.test.movieapplication.ui.main.MovieListScreen
+import com.test.movieapplication.viewmodel.MovieViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
+    private val movieViewModel: MovieViewModel by viewModels()
+
+        override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
-            MovieApplicationTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
+            MovieAppNavigation(viewModel = movieViewModel, applicationContext)
         }
     }
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
+fun MovieAppNavigation(viewModel: MovieViewModel, context: Context) {
+    val navController = rememberNavController()
+
+    NavHost(navController = navController, startDestination = Routes.MovieList) {
+
+        // Movie list screen route
+        composable(Routes.MovieList) {
+            MovieListScreen(
+                viewModel = viewModel,
+                navController = navController,
+                context = context
+            )
+        }
+
+        // Movie detail screen route with a dynamic movieId argument
+        composable("${Routes.MovieDetail}/{movieId}") { backStackEntry ->
+            val movieId = backStackEntry.arguments?.getString("movieId")?.toIntOrNull()
+            movieId?.let {
+                MovieDetailScreen(
+                    viewModel = viewModel,
+                    movieId = it,
+                    navController = navController
+                )
+            }
+        }
+    }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    MovieApplicationTheme {
-        Greeting("Android")
-    }
+/**
+ * Object containing route definitions for the navigation graph.
+ * Using constants helps reduce errors and improves code readability.
+ */
+object Routes {
+    const val MovieList = "movie_list"
+    const val MovieDetail = "movieDetail"
 }
