@@ -2,7 +2,9 @@ package com.test.movieapplication.ui.details
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
@@ -55,11 +57,14 @@ fun MovieDetailScreen(
         }
     ) { paddingValues ->
         movieDetail?.let { movie ->
+            val scrollState = rememberScrollState()
+
             Column(
                 modifier = Modifier
                     .padding(paddingValues)
                     .padding(16.dp)
                     .fillMaxSize()
+                    .verticalScroll(scrollState)
             ) {
                 // Movie Poster
                 Image(
@@ -74,7 +79,7 @@ fun MovieDetailScreen(
                         .fillMaxWidth()
                         .height(300.dp)
                         .clip(RoundedCornerShape(8.dp)),
-                    contentScale = ContentScale.Crop
+                    contentScale = ContentScale.FillBounds
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))

@@ -1,36 +1,41 @@
 package com.test.movieapplication.ui.main
 
+import android.content.Context
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.*
 import androidx.compose.ui.unit.dp
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.test.movieapplication.viewmodel.MovieViewModel
 import androidx.compose.ui.Modifier
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
+import androidx.compose.foundation.lazy.grid.LazyGridState
+import androidx.compose.material3.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.SwipeRefreshState
+import com.test.movieapplication.utils.isOnline
 
 @Composable
-fun MovieListScreen(viewModel: MovieViewModel, navController: NavController) {
+fun MovieListScreen(viewModel: MovieViewModel, navController: NavController, context: Context) {
     var searchQuery by rememberSaveable { mutableStateOf("") }
+    var isRefreshing by remember { mutableStateOf(false) }
 
-    // Update search query in the ViewModel whenever it changes
     LaunchedEffect(searchQuery) {
         viewModel.setQuery(searchQuery)
     }
 
-    // Collect the paginated movie list items
     val movies = viewModel.moviesFlow.collectAsLazyPagingItems()
-
-    // Save the list state to preserve scroll position on recomposition
-    val listState = rememberSaveable(saver = LazyListState.Saver) {
-        LazyListState()
+    val listState = rememberSaveable(saver = LazyGridState.Saver) {
+        LazyGridState()
     }
 
     Column(
@@ -38,7 +43,14 @@ fun MovieListScreen(viewModel: MovieViewModel, navController: NavController) {
             .fillMaxSize()
             .padding(horizontal = 16.dp)
     ) {
-        // Search TextField for movie queries
+        if (!context.isOnline()) {
+            Text(
+                text = "You are offline. Showing cached data.",
+                color = Color.Red,
+                modifier = Modifier.padding(top = 16.dp)
+            )
+        }
+
         TextField(
             value = searchQuery,
             onValueChange = { newQuery -> searchQuery = newQuery },
@@ -48,20 +60,35 @@ fun MovieListScreen(viewModel: MovieViewModel, navController: NavController) {
                 .padding(top = 16.dp)
         )
 
-        LazyColumn(
-            state = listState,
-            modifier = Modifier.fillMaxSize()
+        SwipeRefresh(
+            state = SwipeRefreshState(isRefreshing),
+            onRefresh = {
+                isRefreshing = true
+                viewModel.setQuery(searchQuery)
+                movies.refresh()
+                isRefreshing = false
+            }
         ) {
-            items(count = movies.itemCount) { index ->
-                val item = movies[index]
-                item?.let {
-                    if (item.poster_path != null && item.overview != null) {
-                        MovieItem(
-                            movie = it,
-                            onMovieClick = {
-                                navController.navigate("movieDetail/${item.id}")
-                            }
-                        )
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                state = listState,
+                contentPadding = PaddingValues(top = 16.dp, bottom = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier.fillMaxSize()
+            ) {
+                items(movies.itemCount) { index ->
+                    val item = movies[index]
+                    item?.let {
+                        if (item.poster_path != null && item.overview != null) {
+                            MovieItem(
+                                movie = it,
+                                onMovieClick = {
+                                    navController.navigate("movieDetail/${item.id}")
+                                },
+                                isOnline = context.isOnline()
+                            )
+                        }
                     }
                 }
             }

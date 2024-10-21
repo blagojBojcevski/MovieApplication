@@ -79,9 +79,16 @@ dependencies {
     // Add this if using Mockito with coroutines
     testImplementation(libs.mockito.inline)
 
+    //  Room dependencies
+    kapt(libs.room.compiler)
+    implementation(libs.room.ktx)
+    testImplementation(libs.room.testing)
+    implementation(libs.room.paging)
+
+    // Accompanist Swipe Refresh
+    implementation(libs.accompanist.swiperefresh)
     // Coroutines test library
     testImplementation(libs.kotlinx.coroutines.test)
-    testImplementation(libs.turbine)
 
     // Hilt dependencies
     implementation(libs.hilt.android)
@@ -100,7 +107,4 @@ dependencies {
 
     // Compose Paging
     implementation(libs.compose.paging)
-
-    // OkHttp Logging Interceptor
-    implementation(libs.android.okhttp3)
 }
