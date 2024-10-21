@@ -73,7 +73,8 @@ class MovieViewModelTest {
             poster_path = "/inception.jpg",
             backdrop_path = "/inception.jpg",
             original_language = "en",
-            original_name = "Inception",
+            vote_count = "122",
+            vote_average = 1.1
         )
         val movieResponse = MovieResponse(
             results = listOf(movie),
