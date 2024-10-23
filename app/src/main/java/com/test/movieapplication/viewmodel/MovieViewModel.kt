@@ -8,7 +8,7 @@ import androidx.paging.cachedIn
 import com.test.movieapplication.BuildConfig
 import com.test.movieapplication.data.model.MovieDetail
 import com.test.movieapplication.data.paging.MoviesPagingSource
-import com.test.movieapplication.data.repository.MovieRepositoryInterface
+import com.test.movieapplication.domain.MovieInteractor
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,7 +18,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MovieViewModel @Inject constructor(
-    private val repository: MovieRepositoryInterface
+    private val movieInteractor: MovieInteractor
 ) : ViewModel() {
 
     // API key for authentication with the movie API
@@ -34,18 +34,18 @@ class MovieViewModel @Inject constructor(
     private val currentQuery = MutableStateFlow("")
 
     /**
-    * Flow of movies based on the current query. It triggers a new search whenever
-    * the query changes.
-    *
-    * - flatMapLatest: Ensures that only the latest query result is collected.
-    * - Pager: Creates the paginated data source.
-    * - cachedIn: Caches the flow within the viewModelScope to ensure data survives configuration changes.
-    */
+     * Flow of movies based on the current query. It triggers a new search whenever
+     * the query changes.
+     *
+     * - flatMapLatest: Ensures that only the latest query result is collected.
+     * - Pager: Creates the paginated data source.
+     * - cachedIn: Caches the flow within the viewModelScope to ensure data survives configuration changes.
+     */
     val moviesFlow = currentQuery.flatMapLatest { query ->
         Pager(
             config = PagingConfig(pageSize = 20),
             pagingSourceFactory = {
-                MoviesPagingSource(repository, apiKey = apiKey, query = query)
+                MoviesPagingSource(movieInteractor, apiKey = apiKey, query = query)  // Now using Interactor
             }
         ).flow.cachedIn(viewModelScope)
     }
@@ -59,7 +59,6 @@ class MovieViewModel @Inject constructor(
         currentQuery.value = query
     }
 
-
     /**
      * Fetches the details of a movie by its ID.
      * The result is posted to the `_movieDetailStateFlow` for UI observation.
@@ -69,7 +68,7 @@ class MovieViewModel @Inject constructor(
     fun fetchMovieById(movieId: Int) {
         viewModelScope.launch {
             try {
-                val movieDetail = repository.getMovieById(movieId, apiKey)
+                val movieDetail = movieInteractor.getMovie(movieId, apiKey)
                 _movieDetailStateFlow.value = movieDetail
             } catch (e: Exception) {
                 e.printStackTrace()

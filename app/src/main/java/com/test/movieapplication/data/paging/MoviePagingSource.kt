@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.test.movieapplication.data.model.Movie
-import com.test.movieapplication.data.repository.MovieRepositoryInterface
+import com.test.movieapplication.domain.MovieInteractor
 
 /**
  * A PagingSource that loads movie data from a MovieRepository.
@@ -16,7 +16,7 @@ import com.test.movieapplication.data.repository.MovieRepositoryInterface
  * @param query The search query; if empty, popular movies will be fetched.
  */
 class MoviesPagingSource(
-    private val repository: MovieRepositoryInterface,
+    private val repository: MovieInteractor,
     private val apiKey: String,
     private val query: String
 ) : PagingSource<Int, Movie>() {

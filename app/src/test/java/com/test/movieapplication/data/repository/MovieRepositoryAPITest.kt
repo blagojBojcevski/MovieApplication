@@ -16,14 +16,12 @@ import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.just
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 
-@OptIn(ExperimentalCoroutinesApi::class)
-class MovieRepositoryTest {
+class MovieRepositoryAPITest {
 
     @MockK
     private lateinit var apiService: MovieApiService
@@ -43,7 +41,7 @@ class MovieRepositoryTest {
     @MockK
     private lateinit var networkCapabilities: NetworkCapabilities
 
-    private lateinit var movieRepository: MovieRepository
+    private lateinit var movieRepository: MovieRepositoryAPI
 
     private lateinit var movie: Movie
 
@@ -51,7 +49,7 @@ class MovieRepositoryTest {
     fun setUp() {
         MockKAnnotations.init(this)
 
-        movieRepository = MovieRepository(apiService, movieDao, context)
+        movieRepository = MovieRepositoryAPI(apiService, movieDao)
 
         // Mock the connectivity service
         every { context.getSystemService(Context.CONNECTIVITY_SERVICE) } returns connectivityManager
@@ -102,25 +100,6 @@ class MovieRepositoryTest {
     }
 
     @Test
-    fun `getPopularMovies returns movies from DB when offline`() = runTest {
-        // Arrange
-        val apiKey = "api_key"
-        val page = 1
-
-        // Simulate offline behavior
-        every { connectivityManager.getActiveNetwork() } returns null
-        coEvery { movieDao.getAllMovies() } returns listOf(movie)
-
-        // Act
-        val result = movieRepository.getPopularMovies(apiKey, page)
-
-        // Assert
-        Assert.assertEquals(listOf(movie), result.results)
-        coVerify { movieDao.getAllMovies() }
-        coVerify(exactly = 0) { apiService.getPopularMovies(any(), any(), any()) }
-    }
-
-    @Test
     fun `searchMovies returns movies from API when online`() = runTest {
         // Arrange
         val apiKey = "api_key"
@@ -143,26 +122,6 @@ class MovieRepositoryTest {
         Assert.assertEquals(movieResponse, result)
         coVerify { apiService.searchMovieCollection(query, "en-US", apiKey, page) }
         coVerify { movieDao.insertMovieList(movieResponse.results) }
-    }
-
-    @Test
-    fun `searchMovies returns movies from DB when offline`() = runTest {
-        // Arrange
-        val apiKey = "api_key"
-        val query = "Batman"
-        val page = 1
-
-        // Simulate offline behavior
-        every { connectivityManager.getActiveNetwork() } returns null
-        coEvery { movieDao.searchMovie(any()) } returns listOf(movie)
-
-        // Act
-        val result = movieRepository.searchMovies(apiKey, query, page)
-
-        // Assert
-        Assert.assertEquals(listOf(movie), result.results)
-        coVerify { movieDao.searchMovie(query) }
-        coVerify(exactly = 0) { apiService.searchMovieCollection(any(), any(), any(), any()) }
     }
 
     @Test
@@ -190,26 +149,5 @@ class MovieRepositoryTest {
         // Assert
         Assert.assertEquals(movieDetail, result)
         coVerify { apiService.getMovieById(1, "en-US", apiKey) }
-    }
-
-    @Test
-    fun `getMovieById returns movie details from DB when offline`() = runTest {
-        // Arrange
-        val apiKey = "api_key"
-        val movieId = 1
-
-        // Simulate offline behavior
-        every { connectivityManager.getActiveNetwork() } returns null
-        coEvery { movieDao.getMovie(any()) } returns movie
-
-        // Act
-        val result = movieRepository.getMovieById(movieId, apiKey)
-
-        // Assert
-        Assert.assertEquals(movie.id, result.id)
-        Assert.assertEquals(movie.original_title, result.original_title)
-        Assert.assertEquals(movie.overview, result.overview)
-        coVerify { movieDao.getMovie(movieId.toLong()) }
-        coVerify(exactly = 0) { apiService.getMovieById(any(), any(), any()) }
     }
 }

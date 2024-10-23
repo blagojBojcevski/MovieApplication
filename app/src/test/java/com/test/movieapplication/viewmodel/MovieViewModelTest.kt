@@ -3,7 +3,7 @@ package com.test.movieapplication.viewmodel
 import com.test.movieapplication.data.model.Movie
 import com.test.movieapplication.data.model.MovieDetail
 import com.test.movieapplication.data.model.MovieResponse
-import com.test.movieapplication.data.repository.MovieRepositoryInterface
+import com.test.movieapplication.domain.MovieInteractor
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -22,7 +22,7 @@ import org.junit.Test
 @ExperimentalCoroutinesApi
 class MovieViewModelTest {
 
-    private lateinit var repository: MovieRepositoryInterface
+    private lateinit var repository: MovieInteractor
 
     private lateinit var viewModel: MovieViewModel
 
@@ -52,7 +52,7 @@ class MovieViewModelTest {
         )
 
         // Mock repository call using MockK
-        coEvery { repository.getMovieById(1, any()) } returns movieDetail
+        coEvery { repository.getMovie(1, any()) } returns movieDetail
 
         viewModel.fetchMovieById(1)
 
@@ -61,7 +61,7 @@ class MovieViewModelTest {
         assertEquals(movieDetail, viewModel.movieDetailStateFlow.value)
 
         // Verify that repository method was called
-        coVerify { repository.getMovieById(1, any()) }
+        coVerify { repository.getMovie(1, any()) }
     }
 
     @Test
