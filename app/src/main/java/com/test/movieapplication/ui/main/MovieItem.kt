@@ -67,7 +67,7 @@ fun MovieImage(
                 }
                 diskCachePolicy(CachePolicy.ENABLED)
                 crossfade(true)
-                placeholder(R.drawable.ic_placeholder)
+//                placeholder(R.drawable.ic_placeholder)
                 error(R.drawable.ic_error_image)
             }
             .build()

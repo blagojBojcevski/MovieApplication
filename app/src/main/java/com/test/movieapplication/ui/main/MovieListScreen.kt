@@ -20,6 +20,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
+import androidx.paging.compose.itemKey
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshState
 import com.test.movieapplication.utils.isOnline
@@ -77,7 +78,10 @@ fun MovieListScreen(viewModel: MovieViewModel, navController: NavController, con
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier.fillMaxSize()
             ) {
-                items(movies.itemCount) { index ->
+                items(
+                    count = movies.itemCount,
+                    key = movies.itemKey { it.id }
+                ) { index ->
                     val item = movies[index]
                     item?.let {
                         if (item.poster_path != null && item.overview != null) {
