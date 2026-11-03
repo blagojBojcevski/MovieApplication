@@ -1,5 +1,6 @@
 package com.test.movieapplication.data.database
 
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -18,5 +19,13 @@ interface MovieDao {
     suspend fun getAllMovies(): List<Movie>
 
     @Query("SELECT * FROM Movie WHERE original_title LIKE '%' || :title || '%'")
-    suspend fun searchMovie(title: String):  List<Movie>
+    suspend fun searchMovie(title: String): List<Movie>
+
+    // NOVO
+    @Query("SELECT * FROM Movie ORDER BY position ASC")
+    fun pagingSource(): PagingSource<Int, Movie>
+
+    // NOVO
+    @Query("DELETE FROM Movie")
+    suspend fun clearAll()
 }

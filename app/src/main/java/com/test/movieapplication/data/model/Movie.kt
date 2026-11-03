@@ -15,5 +15,6 @@ data class Movie(
     val backdrop_path: String?,
     val original_language: String,
     val vote_count: String?,
-    val vote_average: Double?
+    val vote_average: Double?,
+    val position: Int = 0
 ): Serializable
