@@ -6,9 +6,11 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.test.movieapplication.ui.details.MovieDetailScreen
 import com.test.movieapplication.ui.main.MovieListScreen
 import com.test.movieapplication.viewmodel.MovieViewModel
@@ -32,7 +34,6 @@ fun MovieAppNavigation(viewModel: MovieViewModel, context: Context) {
 
     NavHost(navController = navController, startDestination = Routes.MovieList) {
 
-        // Movie list screen route
         composable(Routes.MovieList) {
             MovieListScreen(
                 viewModel = viewModel,
@@ -41,16 +42,12 @@ fun MovieAppNavigation(viewModel: MovieViewModel, context: Context) {
             )
         }
 
-        // Movie detail screen route with a dynamic movieId argument
-        composable("${Routes.MovieDetail}/{movieId}") { backStackEntry ->
-            val movieId = backStackEntry.arguments?.getString("movieId")?.toIntOrNull()
-            movieId?.let {
-                MovieDetailScreen(
-                    viewModel = viewModel,
-                    movieId = it,
-                    navController = navController
-                )
-            }
+
+        composable(
+            route = "${Routes.MovieDetail}/{movieId}",
+            arguments = listOf(navArgument("movieId") { type = NavType.IntType })
+        ) {
+            MovieDetailScreen(onBack = { navController.popBackStack() })
         }
     }
 }

@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
+import androidx.paging.filter
 import com.test.movieapplication.BuildConfig
 import com.test.movieapplication.data.model.MovieDetail
 import com.test.movieapplication.data.paging.MoviesPagingSource
@@ -13,6 +14,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -41,14 +43,24 @@ class MovieViewModel @Inject constructor(
     * - Pager: Creates the paginated data source.
     * - cachedIn: Caches the flow within the viewModelScope to ensure data survives configuration changes.
     */
-    val moviesFlow = currentQuery.flatMapLatest { query ->
-        Pager(
-            config = PagingConfig(pageSize = 20),
-            pagingSourceFactory = {
-                MoviesPagingSource(repository, apiKey = apiKey, query = query)
+    val moviesFlow = currentQuery
+        .flatMapLatest { query ->
+            Pager(
+                config = PagingConfig(pageSize = 20),
+                pagingSourceFactory = {
+                    MoviesPagingSource(repository, apiKey = apiKey, query = query)
+                }
+            ).flow
+        }
+        .map { pagingData ->
+            val seen = mutableSetOf<Long>()
+            pagingData.filter { movie ->
+                movie.poster_path != null &&
+                        movie.overview != null &&
+                        seen.add(movie.id)
             }
-        ).flow.cachedIn(viewModelScope)
-    }
+        }
+        .cachedIn(viewModelScope)
 
     /**
      * Updates the search query used to fetch movies.
