@@ -1,0 +1,30 @@
+name: Android CI
+
+# Ова е делот што кажави кога да се пушти (run-ва) pipeline-от
+on:
+  push:
+    branches: [ "main", "feature/paging-and-details-rework", "develop" ]
+  pull_request:
+    branches: [ "main", "feature/paging-and-details-rework", "develop" ]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Run Unit Tests
+        run: ./gradlew test
